@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String      @id @default(cuid())
+  name          String?
+  email         String?     @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  UserCredit    UserCredit?
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model UserCredit {
+  id      Int    @id @default(autoincrement())
+  userId  String @unique
+  user    User   @relation(fields: [userId], references: [id])
+  credits Int    @default(4)
+}
+
+model Draft {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  userId    String
+
+  proxyId      String  @unique
+  proxyChannel String?
+  status       String
+  progress     String
+  actions      String
+  errorMessage String?
+  imageUrl     String?
+  buttons      Json?
+
+  credits   Int
+  prompt    String
+  rawPrompt String
+  style     String?
+  position  String?
+
+  Tattoo Tattoo[]
+}
+
+model Tattoo {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  userId    String
+
+  proxyId      String  @unique
+  proxyChannel String?
+  status       String
+  progress     String
+  errorMessage String?
+  imageUrl     String?
+
+  draftId Int
+  draft   Draft @relation(fields: [draftId], references: [id])
+}
