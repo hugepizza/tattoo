@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { PromptParam } from "../api/draft/prompt";
 import { useSession } from "next-auth/react";
 import toast, { Toaster } from "react-hot-toast";
-import { GenerateCredit } from "../constant";
+import { GENERATE_CREDIT } from "../constant";
 
 const styles = [
   {
@@ -103,7 +103,7 @@ export default function Input() {
       // router.push("/api/auth/callback/google");
       return;
     }
-    if (credit < GenerateCredit) {
+    if (credit < GENERATE_CREDIT) {
       toast.error("Out of credits");
       return;
     }
@@ -185,7 +185,7 @@ export default function Input() {
         <div className="flex space-x-1 w-full h-16  bg-slate-200 px-2 py-2 justify-between">
           <button className="btn btn-ghost no-animation">
             {" "}
-            {GenerateCredit} Credit
+            {GENERATE_CREDIT} Credit
           </button>
           <button
             className={`btn grow ${

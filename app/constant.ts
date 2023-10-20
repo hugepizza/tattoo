@@ -1,2 +1,2 @@
-export const GenerateCredit = 2;
-export const VarufyCredit = 2;
+export const GENERATE_CREDIT = 2;
+export const VARIATION_CREDIT = 2;

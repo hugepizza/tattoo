@@ -81,7 +81,6 @@ model Draft {
   prompt    String
   rawPrompt String
   style     String?
-  position  String?
 
   Tattoo Tattoo[]
 }
@@ -97,6 +96,9 @@ model Tattoo {
   progress     String
   errorMessage String?
   imageUrl     String?
+
+  rawPrompt String?
+  style     String?
 
   draftId Int
   draft   Draft @relation(fields: [draftId], references: [id])

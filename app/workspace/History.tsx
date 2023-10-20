@@ -1,19 +1,53 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { Draft } from "../api/draft/route";
 import { WorkspaceContext } from "./context";
+import { Tattoo } from "../api/tattoo/route";
 
-
-export default function History({ drafts }: { drafts: Draft[] }) {
+export default function History({
+  drafts,
+  tattoos,
+}: {
+  drafts: Draft[] | undefined;
+  tattoos: Tattoo[] | undefined;
+}) {
   const { setEditing } = useContext(WorkspaceContext);
+  const [active, setActive] = useState("drafts");
+  const showItems:
+    | {
+        id: number;
+        status: string;
+        imageUrl: string | null;
+        progress: string | null;
+        createdAt: Date;
+      }[]
+    | undefined = active === "drafts" ? drafts : tattoos;
   return (
     <div className="flex flex-col w-1/2 h-full bg-slate-100 border-l-[1px] border-solid">
       <div className="tabs w-full">
-        <a className="tab tab-lg tab-bordered grow tab-active">Draft</a>
-        <a className="tab tab-lg tab-bordered grow">Tattoo</a>
+        <a
+          className={`tab tab-lg tab-bordered grow ${
+            active === "drafts" ? "tab-active" : ""
+          }`}
+          onClick={() => {
+            setActive("drafts");
+          }}
+        >
+          Draft
+        </a>
+        <a
+          className={`tab tab-lg tab-bordered grow ${
+            active === "tattoos" ? "tab-active" : ""
+          }`}
+          onClick={() => {
+            setActive("tattoos");
+          }}
+        >
+          Tattoos
+        </a>
       </div>
       <div className="flex w-full flex-grow flex-col h-full p-1 overflow-y-auto">
-        {drafts?.map((ele) => (
+        {showItems?.map((ele) => (
           <div
             key={ele.id}
             className="card card-compact w-full bg-base-100 shadow-md rounded-md mb-1"
@@ -22,7 +56,13 @@ export default function History({ drafts }: { drafts: Draft[] }) {
                 toast.error("choose a done draft");
                 return;
               }
-              setEditing(ele);
+              {
+                active === "drafts"
+                  ? setEditing(
+                      drafts?.find((ele2) => ele2.id === ele.id) || null
+                    )
+                  : console.log(1);
+              }
             }}
           >
             {ele.status === "SUCCESS" && (

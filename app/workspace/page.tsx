@@ -7,10 +7,12 @@ import Desk from "./Desk";
 import { Toaster } from "react-hot-toast";
 import { Draft } from "../api/draft/route";
 import { WorkspaceContext } from "./context";
+import { Tattoo } from "../api/tattoo/route";
 
 export default function Page() {
   const [editing, setEditing] = useState<Draft | null>(null);
   const [draftQuery, setDraftQuery] = useState(0);
+  const [tattooQuery, setTattooQuery] = useState(0);
   const {
     data: drafts,
     error: draftsError,
@@ -20,6 +22,17 @@ export default function Page() {
     fetch("/api/draft?page=" + query, { method: "GET" })
       .then((resp) => resp.json())
       .then((resp) => resp.data.drafts as Draft[])
+  );
+
+  const {
+    data: tattoos,
+    error: tattoosError,
+    isLoading: tattoosLoading,
+    mutate: tattooMutate,
+  } = useSWR(["/api/tattoo", tattooQuery], ([url, query]) =>
+    fetch("/api/tattoo?page=" + query, { method: "GET" })
+      .then((resp) => resp.json())
+      .then((resp) => resp.data.tattoos as Tattoo[])
   );
 
   return (
@@ -37,7 +50,7 @@ export default function Page() {
         <Toaster />
         <Input />
         <Desk />
-        <History drafts={drafts ?? []} />
+        <History {...{ drafts, tattoos }} />
       </div>
     </WorkspaceContext.Provider>
   );

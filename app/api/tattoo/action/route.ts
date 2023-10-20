@@ -41,19 +41,6 @@ async function POST(request: NextRequest) {
     })
   );
   if (label.startsWith("U")) {
-    txPromise.push(
-      prisma.tattoo.create({
-        data: {
-          userId: userId,
-          draftId: draft.id,
-          progress: "0%",
-          status: "NOT_STARTED",
-          proxyId: actionRes.result,
-          rawPrompt: draft.rawPrompt,
-          style: draft.style,
-        },
-      })
-    );
   } else if (label.startsWith("V")) {
     txPromise.push(
       prisma.draft.create({

@@ -95,7 +95,7 @@ function TattooEditor({
             style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
           >
             <button className={`btn w-full mb-2 rounded-none ${"glass"}  `}>
-              free up
+              UPSCALE
             </button>
           </div>
         ) : (
@@ -166,8 +166,8 @@ function OneFourHover({ buttons }: { buttons: Button[] }) {
                 ele.used ? "btn-disabled" : "glass"
               }  `}
             >
-              {ele.label.startsWith("U") && "free up"}
-              {ele.label.startsWith("V") && "var(2 credits)"}
+              {ele.label.startsWith("U") && "UPSCALE"}
+              {ele.label.startsWith("V") && "VARIATION(2 credits)"}
             </button>
           ))}
         </div>

@@ -4,7 +4,7 @@ import AssemblePrompt, { PromptParam } from "./prompt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { NextRequest, NextResponse } from "next/server";
-import { GenerateCredit } from "@/app/constant";
+import { GENERATE_CREDIT } from "@/app/constant";
 import { Prisma } from "@prisma/client";
 
 async function POST(request: NextRequest) {
@@ -14,7 +14,7 @@ async function POST(request: NextRequest) {
   const userCredit = await prisma.userCredit.findFirstOrThrow({
     where: { userId },
   });
-  if (userCredit.credits < GenerateCredit)
+  if (userCredit.credits < GENERATE_CREDIT)
     return NextResponse.json({ err: { msg: "out of credits" } });
 
   const param = (await request.json()) as PromptParam;
@@ -28,7 +28,6 @@ async function POST(request: NextRequest) {
       status: "NOT_STARTED",
       credits: 1,
       rawPrompt: param.rawPrompt,
-      position: param.position,
       style: param.style,
       proxyId: imagineRes.result,
       proxyChannel: imagineRes.properties?.discordInstanceId,
@@ -37,7 +36,7 @@ async function POST(request: NextRequest) {
   });
   const updateUserCredit = prisma.userCredit.update({
     where: { userId },
-    data: { credits: { decrement: GenerateCredit } },
+    data: { credits: { decrement: GENERATE_CREDIT } },
   });
   await prisma.$transaction([createDraft, updateUserCredit]);
   return Response.json({});
