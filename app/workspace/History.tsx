@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import { WorkspaceContext } from "./page";
 import toast from "react-hot-toast";
 import { Draft } from "../api/draft/route";
+import { WorkspaceContext } from "./context";
 
 
 export default function History({ drafts }: { drafts: Draft[] }) {

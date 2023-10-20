@@ -1,18 +1,12 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 import Input from "./Input";
 import History from "./History";
 import useSWR from "swr";
 import Desk from "./Desk";
 import { Toaster } from "react-hot-toast";
 import { Draft } from "../api/draft/route";
-
-export const WorkspaceContext = createContext({
-  reloadHistory: () => {},
-  editing: {} as Draft | null,
-  setEditing: (item: Draft | null) => {},
-  draftMutate: () => {},
-});
+import { WorkspaceContext } from "./context";
 
 export default function Page() {
   const [editing, setEditing] = useState<Draft | null>(null);

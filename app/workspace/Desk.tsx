@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
 import "./styles.css";
-import { WorkspaceContext } from "./page";
 import { Button } from "../api/draft/action/route";
 import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
+import { WorkspaceContext } from "./context";
 const act = async (draftId: number, label: string, customId: string) => {
   const promise = fetch("/api/draft/action", {
     method: "POST",
