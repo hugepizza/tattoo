@@ -19,7 +19,7 @@ async function POST(request: Request) {
       break;
     default:
   }
-  await prisma.draft.update({
+  await prisma.imagine.update({
     where: { proxyId: data.id },
     data: update,
   });

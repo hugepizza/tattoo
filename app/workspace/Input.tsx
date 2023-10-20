@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PromptParam } from "../api/draft/prompt";
+import { PromptParam } from "../api/imagine/prompt";
 import { useSession } from "next-auth/react";
 import toast, { Toaster } from "react-hot-toast";
 import { GENERATE_CREDIT } from "../constant";
@@ -107,7 +107,7 @@ export default function Input() {
       toast.error("Out of credits");
       return;
     }
-    const promise = fetch("/api/draft", {
+    const promise = fetch("/api/imagine", {
       method: "POST",
       body: JSON.stringify(params),
     });

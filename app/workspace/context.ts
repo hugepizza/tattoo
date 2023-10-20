@@ -1,9 +1,11 @@
-import { Draft } from "../api/draft/route";
+import { Imagine } from "../api/imagine/route";
 import { createContext, useState } from "react";
 
+export type EditingItem = { type: string; id: number } | null;
 export const WorkspaceContext = createContext({
   reloadHistory: () => {},
-  editing: {} as Draft | null,
-  setEditing: (item: Draft | null) => {},
-  draftMutate: () => {},
+  editing: {} as EditingItem,
+  setEditing: (item: EditingItem) => {},
+  // draftMutate: () => {},
+  // tattooMutate: () => {},
 });

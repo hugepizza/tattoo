@@ -1,14 +1,14 @@
 import { useContext, useState } from "react";
 import "./styles.css";
-import { Button } from "../api/draft/action/route";
+import { Button } from "../api/imagine/action/route";
 import toast from "react-hot-toast";
-import { useSWRConfig } from "swr";
+import useSWR from "swr";
 import { WorkspaceContext } from "./context";
-const act = async (draftId: number, label: string, customId: string) => {
-  const promise = fetch("/api/draft/action", {
+const act = async (imagineId: number, label: string, customId: string) => {
+  const promise = fetch("/api/imagine/action", {
     method: "POST",
     body: JSON.stringify({
-      draftId,
+      imagineId,
       label,
       customId,
     }),
@@ -20,21 +20,57 @@ const act = async (draftId: number, label: string, customId: string) => {
   });
 };
 
+function useDraft(id: number | null) {
+  const fetcher = (url: string) =>
+    fetch(url, { method: "GET" })
+      .then((resp) => resp.json())
+      .then((resp) => resp.data);
+
+  const { data, error } = useSWR(id ? `/api/imagine/${id}` : null, fetcher);
+  return {
+    imagine: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+}
+
 export default function Desk() {
   const { editing } = useContext(WorkspaceContext);
 
+  const { imagine, isLoading, isError } = useDraft(
+    editing === null ? null : editing.id
+  );
+  if (!imagine)
+    return (
+      <div className="flex flex-col items-center justify-start py-16 w-full space-y-6">
+        <figure className="h-48 w-48 mb-[-48px]">
+          <img src="/logo.png" />
+        </figure>
+        <h1 className="text-3xl font-semibold text-blue-600">
+          Welcome To AI-TATTOO
+        </h1>
+        <h2 className="text-2xl text-gray-700">
+          Create A Draft From Left Panel
+        </h2>
+        <h2 className="text-2xl text-gray-700">
+          Load A Draft To Edit From Right Panel
+        </h2>
+        <h1 className="text-3xl font-semibold text-blue-600">Enjoy!</h1>
+      </div>
+    );
   let buttons: Button[] = [];
+  if (isError) return <>err occured...</>;
+  if (isLoading) return <>loading...</>;
 
-  if (!editing) return <div className="w-full"></div>;
-  if (editing.buttons != null && (editing.buttons as Button[])) {
-    buttons = (editing.buttons as Button[]).filter(
+  if (imagine.buttons != null && (imagine.buttons as Button[])) {
+    buttons = (imagine.buttons as Button[]).filter(
       (ele) => ele.label.startsWith("U") || ele.label.startsWith("V")
     );
   }
 
   return (
     <div className="flex flex-col flex-grow w-full h-full bg-slate-50 items-center">
-      <DraftEditor buttons={buttons} url={editing.imageUrl!} />
+      <DraftEditor buttons={buttons} url={imagine.imageUrl!} />
       <div className="w-1/2 py-2">
         <div className="badge badge-neutral mr-2">Traditional Tattoo</div>a
         Gakuen Anime Style of The night was cold, and he sat alone in the
@@ -137,7 +173,7 @@ function DraftEditor({ buttons, url }: { url: string; buttons: Button[] }) {
 
 function OneFourHover({ buttons }: { buttons: Button[] }) {
   const [hovered, setHovered] = useState(false);
-  const { editing, draftMutate } = useContext(WorkspaceContext);
+  const { editing } = useContext(WorkspaceContext);
 
   return (
     <div
@@ -159,7 +195,7 @@ function OneFourHover({ buttons }: { buttons: Button[] }) {
               key={ele.label}
               onClick={() => {
                 act(editing!.id, ele.label, ele.customId).then(() => {
-                  draftMutate();
+                  // reload
                 });
               }}
               className={`btn w-full mb-2 rounded-none ${

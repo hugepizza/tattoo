@@ -1,46 +1,59 @@
 import { useContext, useState } from "react";
 import toast from "react-hot-toast";
-import { Draft } from "../api/draft/route";
+import { Imagine } from "../api/imagine/route";
 import { WorkspaceContext } from "./context";
-import { Tattoo } from "../api/tattoo/route";
+import useSWR from "swr";
 
-export default function History({
-  drafts,
-  tattoos,
-}: {
-  drafts: Draft[] | undefined;
-  tattoos: Tattoo[] | undefined;
-}) {
+export default function History() {
+  const {
+    data: drafts,
+    error: draftsError,
+    isLoading: draftsLoading,
+    mutate: draftMutate,
+  } = useSWR(["/api/imagine/draft"], ([url]) =>
+    fetch(url, { method: "GET" })
+      .then((resp) => resp.json())
+      .then((resp) => resp.data.imagine as Imagine[])
+  );
+
+  const {
+    data: tattoos,
+    error: tattoosError,
+    isLoading: tattoosLoading,
+    mutate: tattooMutate,
+  } = useSWR(["/api/imagine/tattoo"], ([url]) =>
+    fetch(url, { method: "GET" })
+      .then((resp) => resp.json())
+      .then((resp) => resp.data.imagine as Imagine[])
+  );
   const { setEditing } = useContext(WorkspaceContext);
-  const [active, setActive] = useState("drafts");
-  const showItems:
-    | {
-        id: number;
-        status: string;
-        imageUrl: string | null;
-        progress: string | null;
-        createdAt: Date;
-      }[]
-    | undefined = active === "drafts" ? drafts : tattoos;
+  const [active, setActive] = useState("draft");
+
+  console.log("draft", active);
+  console.log("drafts", drafts);
+  console.log("tattoos", tattoos);
+  const showItems = active === "draft" ? drafts : tattoos;
+  console.log("showItems", showItems);
+
   return (
     <div className="flex flex-col w-1/2 h-full bg-slate-100 border-l-[1px] border-solid">
       <div className="tabs w-full">
         <a
           className={`tab tab-lg tab-bordered grow ${
-            active === "drafts" ? "tab-active" : ""
+            active === "draft" ? "tab-active" : ""
           }`}
           onClick={() => {
-            setActive("drafts");
+            setActive("draft");
           }}
         >
           Draft
         </a>
         <a
           className={`tab tab-lg tab-bordered grow ${
-            active === "tattoos" ? "tab-active" : ""
+            active === "tattoo" ? "tab-active" : ""
           }`}
           onClick={() => {
-            setActive("tattoos");
+            setActive("tattoo");
           }}
         >
           Tattoos
@@ -57,11 +70,10 @@ export default function History({
                 return;
               }
               {
-                active === "drafts"
-                  ? setEditing(
-                      drafts?.find((ele2) => ele2.id === ele.id) || null
-                    )
-                  : console.log(1);
+                const target = showItems?.find((ele2) => ele2.id === ele.id);
+                if (target) {
+                  setEditing({ type: active, id: target.id });
+                }
               }
             }}
           >

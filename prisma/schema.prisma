@@ -63,10 +63,12 @@ model UserCredit {
   credits Int    @default(4)
 }
 
-model Draft {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  userId    String
+model Imagine {
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  userId          String
+  type            String
+  parentImagineId Int?
 
   proxyId      String  @unique
   proxyChannel String?
@@ -81,25 +83,4 @@ model Draft {
   prompt    String
   rawPrompt String
   style     String?
-
-  Tattoo Tattoo[]
-}
-
-model Tattoo {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  userId    String
-
-  proxyId      String  @unique
-  proxyChannel String?
-  status       String
-  progress     String
-  errorMessage String?
-  imageUrl     String?
-
-  rawPrompt String?
-  style     String?
-
-  draftId Int
-  draft   Draft @relation(fields: [draftId], references: [id])
 }
