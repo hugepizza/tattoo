@@ -1,8 +1,10 @@
 "use client";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 export default function TopBar() {
   const session = useSession();
+
   return (
     <div className="navbar bg-white border-solid border-b-[1px] border-b-slate-300">
       <div className="flex-1">
@@ -34,19 +36,25 @@ export default function TopBar() {
           </g>
         </svg>
 
-        <a className="btn btn-ghost normal-case text-xl text-black no-animation">
+        <Link
+          className="btn btn-ghost normal-case text-xl text-black no-animation"
+          href="/"
+        >
           AI - TATTOO
-        </a>
+        </Link>
       </div>
       <div className="flex-none">
         <label tabIndex={0} className="btn btn-ghost text-black">
-          <a>Pricing</a>
+          <Link href={"/workspace"}>Workspace</Link>
+        </label>
+        <label tabIndex={0} className="btn btn-ghost text-black">
+          <Link href={"/pricing"}>Pricing</Link>
         </label>
 
         {session.data?.user?.image ? (
           <div className="dropdown dropdown-end">
             <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-              <div className="w-10 rounded-full">
+              <div className="w-9 rounded-full">
                 <img src={session.data?.user?.image} />
               </div>
             </label>
@@ -64,7 +72,13 @@ export default function TopBar() {
                 <a>Settings</a>
               </li>
               <li>
-                <a href="/api/auth/signout">Logout</a>
+                <a
+                  onClick={() => {
+                    signOut();
+                  }}
+                >
+                  Logout
+                </a>
               </li>
             </ul>
           </div>
