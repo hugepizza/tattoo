@@ -84,3 +84,11 @@ model Imagine {
   rawPrompt String
   style     String?
 }
+
+model Plan {
+  id       Int    @id @default(autoincrement())
+  name     String
+  price    Int
+  credits  Int
+  describe String
+}
