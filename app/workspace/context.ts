@@ -4,8 +4,12 @@ import { createContext, useState } from "react";
 export type EditingItem = { type: string; id: number } | null;
 export const WorkspaceContext = createContext({
   reloadHistory: () => {},
-  editing: {} as EditingItem,
+  editing: {} as EditingItem | null,
   setEditing: (item: EditingItem) => {},
-  // draftMutate: () => {},
-  // tattooMutate: () => {},
+  inProgressImage: {} as string,
+  setInProgressImage: (item: string) => {},
+  draftMutate: () => {},
+  tattooMutate: () => {},
+  drafts: [] as Imagine[] | undefined,
+  tattoos: [] as Imagine[] | undefined,
 });

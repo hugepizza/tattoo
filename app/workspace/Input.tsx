@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { PromptParam } from "../api/imagine/prompt";
-import { useSession } from "next-auth/react";
 import toast, { Toaster } from "react-hot-toast";
 import { GENERATE_CREDIT } from "../constant";
+import { WorkspaceContext } from "./context";
 
 const styles = [
   {
@@ -77,6 +77,7 @@ const styles = [
 ];
 
 export default function Input() {
+  const { setInProgressImage, draftMutate } = useContext(WorkspaceContext);
   const [params, setParams] = useState<PromptParam>({
     style: "Traditional",
     position: "back",
@@ -100,7 +101,6 @@ export default function Input() {
     setSubmitDisable(true);
     if (credit === null) {
       toast.error("login first");
-      // router.push("/api/auth/callback/google");
       return;
     }
     if (credit < GENERATE_CREDIT) {
@@ -110,15 +110,25 @@ export default function Input() {
     const promise = fetch("/api/imagine", {
       method: "POST",
       body: JSON.stringify(params),
-    });
+    })
+      .then((resp) => resp.json())
+      .then((resp) => {
+        draftMutate();
+      })
+      .catch((err) => {
+        throw err;
+      });
     toast
       .promise(promise, {
         loading: "Prossing...",
         success: "Submitted!",
-        error: "Something Got Wrong, Try It Later",
+        error: (data) => data.toString(),
       })
       .then(() => {
         setSubmitDisable(false);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
   return (

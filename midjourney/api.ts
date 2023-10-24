@@ -43,6 +43,7 @@ export async function imagine({
       prompt,
       notifyHook,
       modes,
+      instanceId: "1156570429545267220",
     },
     axiosConfig
   );
@@ -100,6 +101,15 @@ export interface CallbackReq {
   properties: {
     finalPrompt: string;
   };
+}
+
+export async function getTask(taskId: string) {
+  const resp = await axios.get<CallbackReq>(
+    `${baseUrl}/mj/task/${taskId}/fetch`,
+    axiosConfig
+  );
+  const result = resp.data;
+  return result;
 }
 
 export async function getTasks(taskIds: string[]) {

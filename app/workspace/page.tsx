@@ -12,12 +12,40 @@ export default function Page() {
   const [editing, setEditing] = useState<EditingItem>(null);
   const [draftQuery, setDraftQuery] = useState(0);
   const [tattooQuery, setTattooQuery] = useState(0);
+  const [inProgressImage, setInProgressImage] = useState("");
+
+  const {
+    data: drafts,
+    error: draftsError,
+    isLoading: draftsLoading,
+    mutate: draftMutate,
+  } = useSWR(["/api/imagine/draft"], ([url]) =>
+    fetch(url, { method: "GET" })
+      .then((resp) => resp.json())
+      .then((resp) => resp.data.imagine as Imagine[])
+  );
+  const {
+    data: tattoos,
+    error: tattoosError,
+    isLoading: tattoosLoading,
+    mutate: tattooMutate,
+  } = useSWR(["/api/imagine/tattoo"], ([url]) =>
+    fetch(url, { method: "GET" })
+      .then((resp) => resp.json())
+      .then((resp) => resp.data.imagine as Imagine[])
+  );
 
   return (
     <WorkspaceContext.Provider
       value={{
-        editing: editing,
-        setEditing: setEditing,
+        editing,
+        setEditing,
+        inProgressImage,
+        setInProgressImage,
+        tattoos,
+        drafts,
+        tattooMutate,
+        draftMutate,
         reloadHistory: () => {
           console.log(1);
         },

@@ -1,9 +1,9 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { prisma } from "@/app/api/prisma";
 import { UPSCALE_CREDIT, VARIATION_CREDIT } from "@/app/constant";
 import { action } from "@/midjourney/api";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import prisma from "../../prisma";
 export type Button = { customId: string; label: string; used?: boolean };
 async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);

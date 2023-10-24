@@ -20,15 +20,22 @@ const act = async (imagineId: number, label: string, customId: string) => {
   });
 };
 
-function useDraft(id: number | null) {
+function useDraft(type: string, id: number | null) {
   const fetcher = (url: string) =>
     fetch(url, { method: "GET" })
       .then((resp) => resp.json())
-      .then((resp) => resp.data);
+      .then((resp) => resp.data.imagine)
+      .then((resp) => {
+        console.log(resp);
+        return resp;
+      });
 
-  const { data, error } = useSWR(id ? `/api/imagine/${id}` : null, fetcher);
+  const { data, error } = useSWR(
+    id ? `/api/imagine/${type}/${id}` : null,
+    fetcher
+  );
   return {
-    imagine: data,
+    imagine: id ? data : null,
     isLoading: !error && !data,
     isError: error,
   };
@@ -38,6 +45,7 @@ export default function Desk() {
   const { editing } = useContext(WorkspaceContext);
 
   const { imagine, isLoading, isError } = useDraft(
+    editing?.type || "draft",
     editing === null ? null : editing.id
   );
   if (!imagine)
@@ -72,11 +80,8 @@ export default function Desk() {
     <div className="flex flex-col flex-grow w-full h-full bg-slate-50 items-center">
       <DraftEditor buttons={buttons} url={imagine.imageUrl!} />
       <div className="w-1/2 py-2">
-        <div className="badge badge-neutral mr-2">Traditional Tattoo</div>a
-        Gakuen Anime Style of The night was cold, and he sat alone in the
-        darkness, his lonely figure curled up on the corner ground, looking out
-        at the empty window, the white curtains swaying in the wind, and the
-        moonlight shining in.
+        <div className="badge badge-neutral mr-2">Traditional Tattoo</div>
+        {imagine.rawPrompt}
       </div>
     </div>
   );
@@ -174,6 +179,7 @@ function DraftEditor({ buttons, url }: { url: string; buttons: Button[] }) {
 function OneFourHover({ buttons }: { buttons: Button[] }) {
   const [hovered, setHovered] = useState(false);
   const { editing } = useContext(WorkspaceContext);
+  console.log("editing", editing);
 
   return (
     <div

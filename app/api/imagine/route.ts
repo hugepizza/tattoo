@@ -1,16 +1,13 @@
 import { imagine } from "@/midjourney/api";
-import { prisma } from "../prisma";
 import AssemblePrompt, { PromptParam } from "./prompt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { NextRequest, NextResponse } from "next/server";
 import { GENERATE_CREDIT } from "@/app/constant";
 import { Prisma } from "@prisma/client";
+import prisma from "../prisma";
 
-export type Imagine = Omit<
-  Prisma.ImagineGetPayload<{}>,
-  "proxyId" | "proxyChannel"
->;
+export type Imagine = Omit<Prisma.ImagineGetPayload<{}>, "proxyChannel">;
 
 async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -31,7 +28,7 @@ async function POST(request: NextRequest) {
       type: "draft",
       prompt: prompt,
       progress: "0%",
-      status: "NOT_STARTED",
+      status: "SUBMITTED",
       credits: 1,
       rawPrompt: param.rawPrompt,
       style: param.style,
@@ -44,8 +41,9 @@ async function POST(request: NextRequest) {
     where: { userId },
     data: { credits: { decrement: GENERATE_CREDIT } },
   });
+
   await prisma.$transaction([createDraft, updateUserCredit]);
-  return Response.json({});
+  return Response.json({ porxyId: imagineRes.result });
 }
 
 export { POST };
