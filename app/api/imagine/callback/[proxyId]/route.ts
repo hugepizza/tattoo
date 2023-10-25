@@ -39,7 +39,7 @@ async function GET(
   let mutation = false;
   let done = false;
   if (target.status === "SUCCESS" || target.status === "FAILURE") {
-    return NextResponse.json({ mutation });
+    return NextResponse.json({ mutation: true, done: true, type: target.type });
   }
   if (
     callback.status === "IN_PROGRESS" &&

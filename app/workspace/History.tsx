@@ -61,7 +61,7 @@ export default function History() {
   }, [inProgressImage]); // 这里只依赖于 inProgressImage
 
   return (
-    <div className="flex flex-col w-1/2 h-full bg-slate-100 border-l-[1px] border-solid">
+    <div className="flex flex-col w-1/2 h-full bg-white rounded-md shadow-lg m-2 border-l-[1px] border-solid">
       <div className="tabs w-full">
         <a
           className={`tab tab-lg tab-bordered grow ${

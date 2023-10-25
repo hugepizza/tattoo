@@ -6,7 +6,7 @@ export default function TopBar() {
   const session = useSession();
 
   return (
-    <div className="navbar bg-white border-solid border-b-[1px] border-b-slate-300">
+    <div className="navbar bg-white border-solid border-b-[1px] border-slate-100">
       <div className="flex-1">
         <svg
           version="1.0"

@@ -47,19 +47,7 @@ export default function Desk() {
   if (!imagine)
     return (
       <div className="flex flex-col items-center justify-start py-16 w-full space-y-6">
-        <figure className="h-48 w-48 mb-[-48px]">
-          <img src="/logo.png" />
-        </figure>
-        <h1 className="text-3xl font-semibold text-blue-600">
-          Welcome To AI-TATTOO
-        </h1>
-        <h2 className="text-2xl text-gray-700">
-          Create A Draft From Left Panel
-        </h2>
-        <h2 className="text-2xl text-gray-700">
-          Load A Draft To Edit From Right Panel
-        </h2>
-        <h1 className="text-3xl font-semibold text-blue-600">Enjoy!</h1>
+        <h1>load load load load load load </h1>
       </div>
     );
   let buttons: Button[] = [];
@@ -73,7 +61,7 @@ export default function Desk() {
   }
 
   return (
-    <div className="flex flex-col flex-grow w-full h-full bg-slate-50 items-center">
+    <div className="flex flex-col flex-grow w-full h-full  items-center m-2 rounded-md border-solid border-[1] border-neutral-focus shadow-lg text-neutral-focus">
       <DraftEditor buttons={buttons} url={imagine.imageUrl!} mutate={mutate} />
       <div className="w-1/2 py-2">
         <div className="badge badge-neutral mr-2">Traditional Tattoo</div>
@@ -190,6 +178,9 @@ function OneFourHover({
 }) {
   const { editing, draftMutate, tattooMutate } = useContext(WorkspaceContext);
   const [hovered, setHovered] = useState(false);
+  const [disabledButtons, setDisabledButtons] = useState<boolean[]>(
+    new Array(buttons.length).fill(false)
+  );
 
   return (
     <div
@@ -206,10 +197,14 @@ function OneFourHover({
           className="flex flex-col h-full w-full items-center justify-center"
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
         >
-          {buttons.map((ele) => (
+          {buttons.map((ele, index) => (
             <button
               key={ele.label}
               onClick={() => {
+                const newDisabledButtons = [...disabledButtons];
+                newDisabledButtons[index] = true;
+                setDisabledButtons(newDisabledButtons);
+
                 const actPromise = act(editing!.id, ele.label, ele.customId);
                 toast
                   .promise(actPromise, {
@@ -229,6 +224,7 @@ function OneFourHover({
               className={`btn w-full mb-2 rounded-none ${
                 ele.used ? "btn-disabled" : "glass"
               }  `}
+              disabled={disabledButtons[index]}
             >
               {ele.label.startsWith("U") && "UPSCALE"}
               {ele.label.startsWith("V") && "VARIATION(2 credits)"}

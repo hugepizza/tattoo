@@ -132,9 +132,9 @@ export default function Input() {
       });
   };
   return (
-    <div className="w-1/2 h-full flex-grow-0 border-r-[1px] border-solid">
+    <div className="w-1/2 h-full flex-grow-0 m-2 rounded-md bottom-1 border-solid border-[1px] shadow-lg">
       <div className="flex flex-col h-full">
-        <div className="bg-slate-100 px-2 py-2 border-b-[1px] border-solid">
+        <div className="bg-white px-2 py-2 ">
           <div className="flex flex-col w-full h-[160px] mt-2 justify-center items-center">
             <textarea
               className="textarea textarea-bordered w-full h-full"
@@ -156,8 +156,8 @@ export default function Input() {
           </div>
         </div>
 
-        <div className="flex flex-col px-2 grow bg-slate-100 overflow-y-auto">
-          <div className="sticky top-0 z-10 bg-slate-100">
+        <div className="flex flex-col px-2 grow bg-white overflow-y-auto">
+          <div className="sticky top-0 z-10 bg-white">
             <label className="label">
               <span className="label-text">Style</span>
               <span className="label-text-alt">
@@ -169,7 +169,7 @@ export default function Input() {
             {styles.map((ele) => (
               <div
                 key={ele.name}
-                className={`card h-[112px] w-[112px] rounded-md mb-1 border-solid border-2  ${
+                className={`card h-[112px] w-[112px] rounded-md mb-1   ${
                   params.style === ele.name ? "border-neutral" : ""
                 }`}
                 style={{
@@ -192,7 +192,7 @@ export default function Input() {
           </div>
         </div>
 
-        <div className="flex space-x-1 w-full h-16  bg-slate-200 px-2 py-2 justify-between">
+        <div className="flex space-x-1 w-full h-16  bg-white px-2 py-2 justify-between">
           <button className="btn btn-ghost no-animation">
             {" "}
             {GENERATE_CREDIT} Credit
