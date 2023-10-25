@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { WorkspaceContext } from "./context";
+import Image from "next/image";
 
 export default function History() {
   const {
@@ -104,8 +105,8 @@ export default function History() {
             }}
           >
             {ele.status === "SUCCESS" && (
-              <figure className="w-full">
-                <img src={ele.imageUrl!} alt="draft" />
+              <figure className="w-full aspect-square">
+                <Image src={ele.imageUrl!} alt="draft" fill></Image>
               </figure>
             )}
             {ele.status === "SUBMITTED" && (

@@ -2,21 +2,16 @@ import { useContext, useState } from "react";
 import "./styles.css";
 import { Button } from "../api/imagine/action/route";
 import toast from "react-hot-toast";
-import useSWR from "swr";
+import useSWR, { KeyedMutator } from "swr";
 import { WorkspaceContext } from "./context";
 const act = async (imagineId: number, label: string, customId: string) => {
-  const promise = fetch("/api/imagine/action", {
+  await fetch("/api/imagine/action", {
     method: "POST",
     body: JSON.stringify({
       imagineId,
       label,
       customId,
     }),
-  });
-  toast.promise(promise, {
-    loading: "Prossing...",
-    success: "Submitted!",
-    error: "Something Got Wrong, Try It Later",
   });
 };
 
@@ -30,7 +25,7 @@ function useDraft(type: string, id: number | null) {
         return resp;
       });
 
-  const { data, error } = useSWR(
+  const { data, error, mutate } = useSWR(
     id ? `/api/imagine/${type}/${id}` : null,
     fetcher
   );
@@ -38,13 +33,14 @@ function useDraft(type: string, id: number | null) {
     imagine: id ? data : null,
     isLoading: !error && !data,
     isError: error,
+    mutate: mutate,
   };
 }
 
 export default function Desk() {
   const { editing } = useContext(WorkspaceContext);
 
-  const { imagine, isLoading, isError } = useDraft(
+  const { imagine, isLoading, isError, mutate } = useDraft(
     editing?.type || "draft",
     editing === null ? null : editing.id
   );
@@ -78,7 +74,7 @@ export default function Desk() {
 
   return (
     <div className="flex flex-col flex-grow w-full h-full bg-slate-50 items-center">
-      <DraftEditor buttons={buttons} url={imagine.imageUrl!} />
+      <DraftEditor buttons={buttons} url={imagine.imageUrl!} mutate={mutate} />
       <div className="w-1/2 py-2">
         <div className="badge badge-neutral mr-2">Traditional Tattoo</div>
         {imagine.rawPrompt}
@@ -146,7 +142,15 @@ function TattooEditor({
     </ImageLayar>
   );
 }
-function DraftEditor({ buttons, url }: { url: string; buttons: Button[] }) {
+function DraftEditor({
+  buttons,
+  url,
+  mutate,
+}: {
+  url: string;
+  buttons: Button[];
+  mutate: KeyedMutator<any>;
+}) {
   // merge buttons
   let buttonGroups: Button[][] = [];
   buttons.forEach((ele) => {
@@ -170,16 +174,22 @@ function DraftEditor({ buttons, url }: { url: string; buttons: Button[] }) {
         <OneFourHover
           key={ele.map((ele) => ele.label).join("")}
           buttons={ele}
+          mutate={mutate}
         />
       ))}
     </ImageLayar>
   );
 }
 
-function OneFourHover({ buttons }: { buttons: Button[] }) {
+function OneFourHover({
+  buttons,
+  mutate,
+}: {
+  buttons: Button[];
+  mutate: KeyedMutator<any>;
+}) {
+  const { editing, draftMutate, tattooMutate } = useContext(WorkspaceContext);
   const [hovered, setHovered] = useState(false);
-  const { editing } = useContext(WorkspaceContext);
-  console.log("editing", editing);
 
   return (
     <div
@@ -200,9 +210,21 @@ function OneFourHover({ buttons }: { buttons: Button[] }) {
             <button
               key={ele.label}
               onClick={() => {
-                act(editing!.id, ele.label, ele.customId).then(() => {
-                  // reload
-                });
+                const actPromise = act(editing!.id, ele.label, ele.customId);
+                toast
+                  .promise(actPromise, {
+                    loading: "Prossing...",
+                    success: "Submitted!",
+                    error: (data) => data.toString(),
+                  })
+                  .then(() => {
+                    console.log("run mutate");
+                    if (ele.label.startsWith("U")) tattooMutate();
+                    if (ele.label.startsWith("V")) draftMutate();
+                    mutate();
+                    console.log("run mutate done");
+                  })
+                  .catch((err) => console.log(err));
               }}
               className={`btn w-full mb-2 rounded-none ${
                 ele.used ? "btn-disabled" : "glass"
