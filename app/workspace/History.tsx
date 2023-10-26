@@ -106,11 +106,13 @@ function ItemList({
   setPage: (page: number) => void;
 }) {
   return (
-    <div className="flex w-full flex-grow flex-col h-full p-1 overflow-y-auto">
-      {items?.map((ele) => (
-        <ShowItem key={ele.id} showItem={ele} />
-      ))}
-      <div className="join">
+    <div className="flex flex-col h-full w-full p-1 overflow-y-auto">
+      <div className="flex-grow overflow-y-auto">
+        {items?.map((ele) => (
+          <ShowItem key={ele.id} showItem={ele} />
+        ))}
+      </div>
+      <div className="join flex w-full justify-between items-center">
         <button
           className={`join-item btn grow ${page - 1 > 0 ? "" : "btn-disabled"}`}
           onClick={() => setPage(page - 1)}
