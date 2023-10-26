@@ -2,10 +2,14 @@ import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { WorkspaceContext } from "./context";
 import Image from "next/image";
+import { Imagine } from "../types";
 
 export default function History() {
   const {
-    setEditing,
+    setDraftPage,
+    setTattooPage,
+    draftPage,
+    tattooPage,
     inProgressImage,
     setInProgressImage,
     drafts,
@@ -15,7 +19,6 @@ export default function History() {
   } = useContext(WorkspaceContext);
 
   const [active, setActive] = useState("draft");
-  const showItems = active === "draft" ? drafts : tattoos;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const clearTimer = () => {
     if (timerRef.current) {
@@ -84,50 +87,86 @@ export default function History() {
           Tattoos
         </a>
       </div>
-      <div className="flex w-full flex-grow flex-col h-full p-1 overflow-y-auto">
-        {showItems?.map((ele) => (
-          <div
-            key={ele.id}
-            className="card card-compact w-full bg-base-100 shadow-md rounded-md mb-1"
-            onClick={() => {
-              if (ele.status != "SUCCESS" || !ele.imageUrl) {
-                toast.error("choose a done draft");
-                return;
-              }
-              {
-                const target = showItems?.find((ele2) => ele2.id === ele.id);
-                if (target) {
-                  console.log({ type: active, id: target.id });
+      {active === "draft" ? (
+        <ItemList items={drafts} page={draftPage} setPage={setDraftPage} />
+      ) : (
+        <ItemList items={tattoos} page={tattooPage} setPage={setTattooPage} />
+      )}
+    </div>
+  );
+}
 
-                  setEditing({ type: active, id: target.id });
-                }
-              }
-            }}
-          >
-            {ele.status === "SUCCESS" && (
-              <figure className="w-full aspect-square">
-                <Image src={ele.imageUrl!} alt="draft" fill></Image>
-              </figure>
-            )}
-            {ele.status === "SUBMITTED" && (
-              <div className="flex flex-col h-36 p-1 justify-around items-center">
-                <span className="loading loading-dots loading-lg"></span>
-                {"SUBMITTED"}
-              </div>
-            )}
-            {ele.status === "IN_PROGRESS" && (
-              <div className="flex flex-col h-36 p-1 justify-around items-center">
-                <span className="loading loading-dots loading-lg"></span>
-                {ele.progress}
-              </div>
-            )}
-            <div className="card-body">
-              <div className="card-actions justify-end">
-                {new Date(ele.createdAt).toLocaleString("en-US")}
-              </div>
-            </div>
-          </div>
-        ))}
+function ItemList({
+  items,
+  page,
+  setPage,
+}: {
+  items: Imagine[] | undefined;
+  page: number;
+  setPage: (page: number) => void;
+}) {
+  return (
+    <div className="flex w-full flex-grow flex-col h-full p-1 overflow-y-auto">
+      {items?.map((ele) => (
+        <ShowItem key={ele.id} showItem={ele} />
+      ))}
+      <div className="join">
+        <button
+          className={`join-item btn grow ${page - 1 > 0 ? "" : "btn-disabled"}`}
+          onClick={() => setPage(page - 1)}
+        >
+          «
+        </button>
+        <button className="join-item btn grow">Page {page}</button>
+        <button
+          className={`join-item btn grow ${
+            items && items.length > 0 ? "" : "btn-disabled"
+          }`}
+          onClick={() => setPage(page + 1)}
+        >
+          »
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ShowItem({ showItem }: { showItem: Imagine }) {
+  const { setEditing } = useContext(WorkspaceContext);
+  return (
+    <div
+      key={showItem.id}
+      className="card card-compact w-full bg-base-100 shadow-md rounded-md mb-1"
+      onClick={() => {
+        if (showItem.status != "SUCCESS") {
+          toast.error("choose a done draft");
+          return;
+        } else {
+          setEditing({ type: showItem.type, id: showItem.id });
+        }
+      }}
+    >
+      {showItem.status === "SUCCESS" && (
+        <figure className="w-full aspect-square">
+          <Image src={showItem.imageUrl!} alt="draft" fill></Image>
+        </figure>
+      )}
+      {showItem.status === "SUBMITTED" && (
+        <div className="flex flex-col h-36 p-1 justify-around items-center">
+          <span className="loading loading-dots loading-lg"></span>
+          {"SUBMITTED"}
+        </div>
+      )}
+      {showItem.status === "IN_PROGRESS" && (
+        <div className="flex flex-col h-36 p-1 justify-around items-center">
+          <span className="loading loading-dots loading-lg"></span>
+          {showItem.progress}
+        </div>
+      )}
+      <div className="card-body">
+        <div className="card-actions justify-end">
+          {new Date(showItem.createdAt).toLocaleString("en-US")}
+        </div>
       </div>
     </div>
   );

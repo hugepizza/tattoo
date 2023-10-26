@@ -32,7 +32,7 @@ export const authOptions: AuthOptions = {
       });
     },
   },
-  pages: { signIn: "/auth/signin", signOut: "/auth/signout", newUser: "/home" },
+  pages: { signIn: "/auth/signin", signOut: "/auth/signout", newUser: "" },
 };
 
 const handler = NextAuth(authOptions);

@@ -50,6 +50,7 @@ async function GET(
       data: {
         status: callback.status,
         progress: callback.progress,
+        imageUrl: callback.imageUrl,
       },
     });
     mutation = true;

@@ -6,70 +6,80 @@ import { WorkspaceContext } from "./context";
 
 const styles = [
   {
-    name: "Traditional",
+    name: "Classic",
+    prompt: "Old School Tattoo Style",
     img: "",
     describe:
       "Traditional tattoos, also known as old school tattoos, feature bold lines, bright colors, and classic themes like hearts, daggers, tigers, and pin-up girls with black outlines.",
   },
 
   {
-    name: "New School",
+    name: "Japanese",
+    prompt: "Irezumi tattoo",
     img: "",
     describe:
       "New school tattoos emphasize vibrant colors, exaggerated proportions, and a cartoonish style. They often include exaggerated features and playful elements.",
   },
 
   {
-    name: "Watercolor",
+    name: "Stick and Poke",
+    prompt: "Stick and poke tattoo style",
     img: "",
     describe:
       "Watercolor tattoos mimic the style of watercolor painting, using soft and flowing colors with blurred edges to create an artistic and abstract effect.",
   },
 
   {
-    name: "Geometric",
+    name: "New School",
+    prompt: "New School Tattoo Style",
     img: "",
     describe:
       "Geometric tattoos focus on geometric shapes such as lines, polygons, and symmetrical patterns. These tattoos can be single geometric elements or combined with other styles.",
   },
 
   {
-    name: "Black and Gray",
+    name: "Watercolor",
+    prompt: "Watercolor Style Tattoo",
     img: "",
     describe:
       "This style primarily uses black and gray tones to create depth and visual impact through shading and detail. It's often used for complex details and realistic themes.",
   },
 
   {
-    name: "Realism",
+    name: "Black and Grey",
+    prompt: "black and grey tattoo style, amazing detail",
     img: "",
     describe:
       "Realism tattoos aim to depict subjects like people, animals, and landscapes with a high level of detail and lifelike accuracy, requiring exceptional technical and artistic skills.",
   },
 
   {
-    name: "Neotraditional",
+    name: "Line",
+    prompt: "Line Tattoo Style",
     img: "",
     describe:
       "Neotraditional tattoos combine traditional tattoo elements with more modern design features. They often incorporate additional detail and color while maintaining traditional characteristics.",
   },
 
   {
-    name: "Dark",
+    name: "Tribal",
+    prompt: "Aztec tribal tattoo style",
     img: "",
     describe:
       "This style typically features dark and mysterious themes, such as skulls, bats, and occult symbols, using a dark color palette and shadowy effects.",
   },
 
   {
-    name: "Portrait",
+    name: "Ornamental",
+    prompt: "Ornamental tattoo style",
     img: "",
     describe:
       "Portrait tattoos focus on depicting real individuals as subjects, including celebrities, loved ones, or personal heroes. Creating precise facial features and expressions is a key feature.",
   },
 
   {
-    name: "Text and Font",
+    name: "Neo-Traditional",
+    prompt: "Neo Traditional tattoo style",
     img: "",
     describe:
       "This category includes tattoos featuring text, letters, numbers, or fonts, often used to convey personal messages, mottos, or quotations.",
@@ -79,9 +89,9 @@ const styles = [
 export default function Input() {
   const { setInProgressImage, draftMutate } = useContext(WorkspaceContext);
   const [params, setParams] = useState<PromptParam>({
-    style: "Traditional",
-    position: "back",
+    style: styles[0].name,
     rawPrompt: "",
+    prompt: styles[0].prompt,
   });
   const [credit, setCredit] = useState<number | null>(null);
   const [submitDisable, setSubmitDisable] = useState(false);
@@ -169,8 +179,8 @@ export default function Input() {
             {styles.map((ele) => (
               <div
                 key={ele.name}
-                className={`card h-[112px] w-[112px] rounded-md mb-1   ${
-                  params.style === ele.name ? "border-neutral" : ""
+                className={`card h-[100px] w-[100px] rounded-md mb-1 mr-1 border-[2px]   ${
+                  params.style === ele.name ? "border-neutral-focus" : ""
                 }`}
                 style={{
                   backgroundImage:
@@ -178,7 +188,8 @@ export default function Input() {
                   backgroundSize: "contain",
                 }}
                 onClick={() => {
-                  setParams({ ...params, style: ele.name });
+                  console.log(ele.name);
+                  setParams({ ...params, style: ele.name, prompt: ele.prompt });
                 }}
               >
                 <div

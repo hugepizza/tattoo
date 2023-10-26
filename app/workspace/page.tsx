@@ -1,38 +1,45 @@
 "use client";
-import { createContext, useState } from "react";
+import { useState } from "react";
 import Input from "./Input";
 import History from "./History";
 import useSWR from "swr";
 import Desk from "./Desk";
 import { Toaster } from "react-hot-toast";
-import { Imagine } from "../api/imagine/route";
 import { EditingItem, WorkspaceContext } from "./context";
+import { Imagine } from "../types";
+
+function useHistoryPage(type: string, page: number) {
+  page = page < 1 ? 1 : page;
+  const fetcher = async (url: string, page: number) => {
+    const apiUrl = `${url}/?page=${page}`;
+    return fetch(apiUrl, { method: "GET" })
+      .then((resp) => resp.json())
+      .then((resp) => resp.data.imagine as Imagine[]);
+  };
+  const {
+    data,
+    error: error,
+    isLoading: loading,
+    mutate,
+  } = useSWR([`/api/imagine/${type}`, page], ([url, page]) =>
+    fetcher(url, page)
+  );
+  return { data, mutate };
+}
 
 export default function Page() {
   const [editing, setEditing] = useState<EditingItem>(null);
-  const [draftQuery, setDraftQuery] = useState(0);
-  const [tattooQuery, setTattooQuery] = useState(0);
   const [inProgressImage, setInProgressImage] = useState("");
 
-  const {
-    data: drafts,
-    error: draftsError,
-    isLoading: draftsLoading,
-    mutate: draftMutate,
-  } = useSWR(["/api/imagine/draft"], ([url]) =>
-    fetch(url, { method: "GET" })
-      .then((resp) => resp.json())
-      .then((resp) => resp.data.imagine as Imagine[])
+  const [tattooPage, setTattooPage] = useState(1);
+  const [draftPage, setDraftPage] = useState(1);
+  const { data: drafts, mutate: draftMutate } = useHistoryPage(
+    "draft",
+    draftPage
   );
-  const {
-    data: tattoos,
-    error: tattoosError,
-    isLoading: tattoosLoading,
-    mutate: tattooMutate,
-  } = useSWR(["/api/imagine/tattoo"], ([url]) =>
-    fetch(url, { method: "GET" })
-      .then((resp) => resp.json())
-      .then((resp) => resp.data.imagine as Imagine[])
+  const { data: tattoos, mutate: tattooMutate } = useHistoryPage(
+    "tattoo",
+    tattooPage
   );
 
   return (
@@ -46,6 +53,10 @@ export default function Page() {
         drafts,
         tattooMutate,
         draftMutate,
+        tattooPage,
+        draftPage,
+        setTattooPage,
+        setDraftPage,
         reloadHistory: () => {
           console.log(1);
         },

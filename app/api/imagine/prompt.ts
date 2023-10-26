@@ -1,12 +1,12 @@
 export type PromptParam = {
   style: string;
-  position: string;
+  prompt: string;
   rawPrompt: string;
 };
 export default function AssemblePrompt({
   style,
-  position,
+  prompt,
   rawPrompt,
 }: PromptParam) {
-  return `${style} tattoo stytle, ${rawPrompt}, white background, amazing detail --no skin --no people --v 5.2 --ar 1:1 --q .25`;
+  return `${prompt}, ${rawPrompt}, white pure background --no skin,people,body,arm,back,face,hair --v 5.2 --ar 1:1 --q .25`;
 }
