@@ -144,6 +144,8 @@ function ShowItem({ showItem }: { showItem: Imagine }) {
           toast.error("choose a done draft");
           return;
         } else {
+          console.log(123);
+
           setEditing({ type: showItem.type, id: showItem.id });
         }
       }}

@@ -44,7 +44,7 @@ export default function page() {
         <button
           className="btn btn-neutral"
           onClick={() => {
-            signIn(provider.id, { callbackUrl: "/home" });
+            signIn(provider.id, { callbackUrl: "/workspace" });
           }}
         >
           <svg
